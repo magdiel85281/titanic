@@ -60,6 +60,108 @@ def add_cabin_flag(df):
     df.loc[:, 'CabinFlag'] = np.where(df['Cabin'].isna(), 0, 1)
 
 
+def clean_ticket_type(ticket_list, to_replace, replace_with):
+    """Clean text for in ticket_list, looking for a single string
+    to replace.
+
+    Parameters
+    ----------
+    ticket_list : list
+        list of ticket ids
+    to_replace : str
+        string to replace
+    replace_with : str
+        string to replace with
+
+    Returns
+    -------
+    list
+        original list with cleaned item
+    """
+
+    return [t.replace(to_replace, replace_with) for t in ticket_list]
+
+
+def clean_ticket_list(ticket_list):
+    """Iterate through items in ticket_list to clean up all ticket ids.
+
+    Parameters
+    ----------
+    ticket_list : list
+        list of ticket ids
+
+    Returns
+    -------
+    list
+        original list with all tickets ids cleaned.
+    """
+
+    clean_dict = {'A./5.': 'A5',
+        'A.5.': 'A5',
+        'A/5.': 'A5',
+        'A/5': 'A5',
+        'A/S': 'A5',
+        'A/4.': 'A4',
+        'A/4': 'A4',
+        'A4.': 'A4',
+        'A.4.': 'A4',
+        'C.A.': 'CA',
+        'CA.': 'CA',
+        'F.C.C.': 'FCC',
+        'F.C.': 'FC',
+        'S.O.C.': 'SOC',
+        'S.O.P.': 'SOP',
+        'S.C.': 'SC',
+        'S.O.': 'SO',
+        'O.Q.': 'OQ',
+        'O 2.': 'O2',
+        'O2.': 'O2',
+        'P.P.': 'PP',
+        'S.P.': 'SP',
+        'S.W.': 'SW',
+        'W./C.': 'WC',
+        'W/C': 'WC',
+        'W.E.P.': 'WEP',
+        'WE/P': 'WEP'
+        }
+
+    for k in clean_dict.keys():
+        ticket_list = clean_ticket_type(ticket_list, k, clean_dict[k])
+    return ticket_list
+
+
+def clean_tickets(df):
+    """Replace Ticket column with cleaned up ticket ids
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Titanic data
+    """
+
+    ticket_list = list(df.loc[:, 'Ticket'])
+    df.loc[:, 'Ticket'] = clean_ticket_list(ticket_list)
+
+
+def add_ticket_type(df):
+    """Add column TicketType
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Titanic data
+    """
+
+    ticket_split = df['Ticket'].str.split(' ')
+    ticket_len = ticket_split.apply(lambda x: len(x))
+
+    df['TicketType'] = np.where(
+        ticket_len == 1,
+        'GENERAL',
+        ticket_split.str[0]
+    )
+
+
 def make_categorical(df, colname):
     """Apply pandas.get_dummies to colname and drop first.
 
@@ -99,7 +201,8 @@ def get_all_dummies(df):
         Titanic data with dummied columns
     """
 
-    col_list = ['Pclass', 'Sex', 'SibSp', 'Parch', 'Embarked', 'Section']
+    col_list = ['Pclass', 'Sex', 'SibSp', 'Parch', 'Embarked',
+        'Section', 'TicketType']
     for col in col_list:
         df = make_categorical(df, col)
     return df
@@ -126,6 +229,8 @@ class TitanicData():
             get_last_name(df)
             get_section(df)
             add_cabin_flag(df)
+            clean_tickets(df)
+            add_ticket_type(df)
         self.data = get_all_dummies(self.data)
         self.test_data = get_all_dummies(self.test_data)
 
@@ -159,10 +264,9 @@ class ModelInput():
 
         for col in self.data.columns:
             if ('Pclass' in col) | ('Sex' in col) | ('SibSp' in col) | \
-                ('Parch' in col) | ('Embarked' in col) | ('Section' in col):
+                ('Parch' in col) | ('Embarked' in col) | \
+                ('Section' in col) | ('TicketType' in col):
                     self.features.append(col)
-
-        # self.features.append('Survived')
 
 
     def set_features(self):
