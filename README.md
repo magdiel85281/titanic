@@ -21,13 +21,13 @@ Exploratory Data Analysis and intuition suggested some immediate opportunities f
 - Apply MinMaxScaler (after train-test split)
 
 
-The ```set``` method tranforms the data according to all but the last of the above. It also applies all transformations to the unseen test set used for submission. 
+The `set` method tranforms the data according to all but the last of the above. It also applies all transformations to the unseen test set used for submission. 
 
 `t.set()` <br>
 
 
 ## Build Input for Model
-Select the features to be used in a Random Forest Classifier model by first initializing a ModelInput object with the training and validation data along with the unseen test set. Then, execute the methods that set the features, split the data into the training and test sets, and apply MinMaxScaler.
+Select the features to be used in a Random Forest Classifier model by first initializing a ModelInput object with the training and validation data along with the unseen test set. Then, execute the methods that set the features, split the data into the training and test sets, and apply MinMaxScaler. All transformations done to the training and validation sets are also applied to the unseen data. In addition, the unseen data is not used during the training or validation of the model.
 
 
 `mi = ModelInput(t.data, t.test_data)` <br>
@@ -35,3 +35,12 @@ Select the features to be used in a Random Forest Classifier model by first init
 `mi.train_test_split(test_size=0.2)` <br>
 `mi.scale()` <br>
 
+
+# Jupyter Notebook
+## Grid Search, Optimal Parameters, and Random Forest Classifier
+`random_forest.ipynb` executes all of the above for fetching and transforming the data used to train a Random Forest Classifier. It finds the optimal parameters using `GridSearchCV` and applies those parameters to the final model that are used to make predictions on the unseen data.
+
+## Feature Importance
+In plotting the feature importance, we can see that the top features having an influence on predictions are Sex, Fare, Age, and Pclass.
+
+![feat_imp](img/feat_imp.PNG)
