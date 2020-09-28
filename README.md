@@ -44,3 +44,12 @@ Select the features to be used in a Random Forest Classifier model by first init
 In plotting the feature importance, we can see that the top features having an influence on predictions are Sex, Fare, Age, and Pclass.
 
 ![feat_imp](img/feat_imp.PNG)
+
+# Afterword
+We appear to be overfitting on the training data for two reasons:
+
+- When applying the optimized parameters that resulted from grid search to the training set, we ended up with a pretty decent accuracy of 0.877. However, when creating predictions from the unseen data, the submission returned an accuracy score of 0.778. This is a significant difference from our cross-validation.
+
+- The optimized `max-depth` parameter that resulted from grid search was 7 when we have 54, mostly categorical, features.
+
+There are a few things that come to mind that could mitigate the overfitting. This will be revisted.
