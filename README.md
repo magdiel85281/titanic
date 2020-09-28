@@ -5,8 +5,9 @@ I'm revisiting this challenge because my first submission was pre-my-understandi
 ## Fetching Data
 Initialize a TitanicData object and set attributes to begin working with the data. 
 
-`t = TitanicData()` <br>
-`t.fetch_data()` <br>
+
+> `t = TitanicData()` <br>
+> `t.fetch_data()` <br>
 
 
 
@@ -23,17 +24,17 @@ Exploratory Data Analysis and intuition suggested some immediate opportunities f
 
 The `set` method tranforms the data according to all but the last of the above. It also applies all transformations to the unseen test set used for submission. 
 
-`t.set()` <br>
+> `t.set()` <br>
 
 
 ## Build Input for Model
 Select the features to be used in a Random Forest Classifier model by first initializing a ModelInput object with the training and validation data along with the unseen test set. Then, execute the methods that set the features, split the data into the training and test sets, and apply MinMaxScaler. All transformations done to the training and validation sets are also applied to the unseen data. In addition, the unseen data is not used during the training or validation of the model.
 
 
-`mi = ModelInput(t.data, t.test_data)` <br>
-`mi.set_features()` <br>
-`mi.train_test_split(test_size=0.2)` <br>
-`mi.scale()` <br>
+> `mi = ModelInput(t.data, t.test_data)` <br>
+> `mi.set_features()` <br>
+> `mi.train_test_split(test_size=0.2)` <br>
+> `mi.scale()` <br>
 
 
 # Jupyter Notebook
