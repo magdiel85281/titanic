@@ -16,6 +16,20 @@ Initialize a TitanicData object and set attributes to begin working with the dat
 > `t.fetch_data()` <br>
 
 
+## Exploratory Data Analysis (EDA)
+A few quick plots were executed on the existing numerical data before applying any feature engineering. Generating a Seaborn pairplot is an efficient way to see multiple numerical values plotted against each other. 
+
+![pairplot1](img/pairplot1.PNG)
+
+Seaborn violin plots are great for examining distributions among two features and the target.
+
+![vio_sex_age](img/vio_sex_age.PNG)
+![vio_sibsp_age](img/vio_sibsp_age.PNG)
+![vio_section_fare](img/vio_section_fare.PNG)
+
+Note: the last violin plot actually had the "Section" feature broken out from Cabin.
+
+
 ## Feature Engineering: First Impressions
 Exploratory Data Analysis and intuition suggested some immediate opportunities for transformations in the data:
 
@@ -49,18 +63,12 @@ Select the features to be used in a Random Forest Classifier model by first init
 ## Feature Importance
 In plotting the feature importance, we can see that the top features having an influence on predictions are Sex, Fare, Age, and Pclass.
 
-![feat_imp](img/feat_imp.PNG)
+![feat_imp_all](img/feat_imp_all.PNG)
 
-It's important to note that the first feature shown here, `Sex_male`, does not imply that males were more likely to survive than females. The `pandas.get_dummies` method with `drop_first=True` chose to use `male` as the positive class.
-
-Feature importance here is merely communicating that either a 1 or a 0 for `Sex_male` is contributing to the information gain. To get a better idea of which of the two values is the better predictor, we could include [SHAP](https://github.com/slundberg/shap) in additional analyses.
+It's important to note that the first feature shown here, `Sex_male`, does not imply that males were more likely to survive than females. The `pandas.get_dummies` method with `drop_first=True` chose to use `male` as the positive class. Feature importance here is merely communicating that splits on `Sex_male`, which only has two values - 1 or 0 - is a major contributor to the information gain in this Random Forest Classifier. To get a better idea of which of the two values is the better predictor for whether one survived (i.e. `Survived == 1`), we could include something like [SHAP](https://github.com/slundberg/shap) in additional analyses.
 
 
 # Afterword
-We appear to be overfitting on the training data for two reasons:
+When applying the optimized parameters that resulted from grid search to the training set, we ended up with a pretty decent accuracy of 0.855. However, when creating predictions from the unseen data, the submission returned an accuracy score of 0.778. This is a significant difference from our cross-validation. Also, the optimized `max-depth` parameter that resulted from grid search was 7 when we have 55, mostly categorical, features. 
 
-- When applying the optimized parameters that resulted from grid search to the training set, we ended up with a pretty decent accuracy of 0.877. However, when creating predictions from the unseen data, the submission returned an accuracy score of 0.778. This is a significant difference from our cross-validation.
-
-- The optimized `max-depth` parameter that resulted from grid search was 7 when we have 54, mostly categorical, features.
-
-There are a few things that come to mind that could mitigate the overfitting. I'll attack this at a later date.
+A max_depth of 7 in a Random Forest Classification model is, in my experience, suggestive of overfitting. The difference in the scores seems to support that. There are a few things that come to mind that could mitigate this - one of them being a model other than the Random Forest Classifier.  I might attack this at a later date.
