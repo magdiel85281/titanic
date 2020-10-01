@@ -44,7 +44,7 @@ def get_section(df):
     df['Section'] = np.where(
             df['Cabin'].notna(),
             df['Cabin'].astype(str).apply(lambda x: x[0]),
-            np.nan
+            'not_available'
         )
 
 
@@ -201,8 +201,14 @@ def get_all_dummies(df):
         Titanic data with dummied columns
     """
 
-    col_list = ['Pclass', 'Sex', 'SibSp', 'Parch', 'Embarked',
-        'Section', 'TicketType']
+    col_list = ['Pclass',
+        'Sex',
+        'SibSp',
+        'Parch',
+        'Embarked',
+        'Section',
+        'TicketType'
+        ]
     for col in col_list:
         df = make_categorical(df, col)
     return df
@@ -222,8 +228,8 @@ class TitanicData():
         self.test_data = pd.read_csv('../data/test.csv')
 
 
-    def set(self):
-        """Execute sequence of functions to prepare data for model."""
+    def breakout(self):
+        """Breakout categorical data from existing features."""
         for df in [self.data, self.test_data]:
             fill_age(df)
             get_last_name(df)
@@ -231,8 +237,18 @@ class TitanicData():
             add_cabin_flag(df)
             clean_tickets(df)
             add_ticket_type(df)
+
+
+    def get_dummies(self):
+        """Execute sequence of functions to prepare data for model."""
         self.data = get_all_dummies(self.data)
         self.test_data = get_all_dummies(self.test_data)
+
+
+    def set(self):
+        """Initiate feature engineering."""
+        self.breakout()
+        self.get_dummies()
 
 
 
@@ -263,9 +279,13 @@ class ModelInput():
         self.features = ['Age', 'Fare']
 
         for col in self.data.columns:
-            if ('Pclass' in col) | ('Sex' in col) | ('SibSp' in col) | \
-                ('Parch' in col) | ('Embarked' in col) | \
-                ('Section' in col) | ('TicketType' in col):
+            if ('Pclass' in col) | \
+                ('Sex' in col) | \
+                ('SibSp' in col) | \
+                ('Parch' in col) | \
+                ('Embarked' in col) | \
+                ('Section' in col) | \
+                ('TicketType' in col):
                     self.features.append(col)
 
 
